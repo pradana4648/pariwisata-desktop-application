@@ -29,13 +29,15 @@ public class MainApp extends javax.swing.JFrame {
      */
     public MainApp() {
         initComponents();
-        JSONService.getAllProvinsi();
-
+        
+        JSONService.getAllProvinsi();        
+        // Sorted
+        JSONService.getListProvinsi().sort((Provinsi arg0, Provinsi arg1) -> arg0.getNamaProvinsi().compareTo(arg1.getNamaProvinsi()));
         // Init Provinsi List
         for (Provinsi provinsi : JSONService.getListProvinsi()) {
             jComboBox2.addItem(provinsi.getNamaProvinsi());
         }
-
+        
     }
 
     /**
@@ -205,21 +207,24 @@ public class MainApp extends javax.swing.JFrame {
                 Provinsi singleProvinsi;
                 Set<Provinsi> setProvinsiFilter = JSONService.getListProvinsi().stream().collect(Collectors.toSet());
                 singleProvinsi = setProvinsiFilter.stream().filter((Provinsi provinsi) -> provinsi.getNamaProvinsi().equals(arg0.getItem().toString())).collect(Collectors.toList()).get(0);
-
+                
                 JSONService.getAllKabupaten(singleProvinsi.getId());
-
-                System.out.println(JSONService.getListKabupaten());
+                
             }
-
+            
         });
+
+        // Sorted 
+        JSONService.getListKabupaten().sort((Kabupaten arg0, Kabupaten arg1) -> arg0.getNamaKabupaten().compareTo(arg1.getNamaKabupaten()));
+        
         for (Kabupaten kabupaten : JSONService.getListKabupaten()) {
             jComboBox3.addItem(kabupaten.getNamaKabupaten());
-
+            
         }
-
+        
         jComboBox3.revalidate();
         jComboBox3.repaint();
-
+        
 
     }//GEN-LAST:event_jComboBox2ActionPerformed
 
