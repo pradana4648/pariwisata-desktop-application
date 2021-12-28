@@ -61,6 +61,7 @@ public class JSONService {
             jsonArray.toList().stream().map(data -> (HashMap<String, Object>) data).forEachOrdered(result -> {
                 getListProvinsi().add(new Provinsi((String) result.get("id"), (String) result.get("nama")));
             });
+
         }
 
     }
@@ -88,6 +89,7 @@ public class JSONService {
             // If List Kabupaten is existed
             if (!getListKabupaten().isEmpty()) {
                 getListKabupaten().clear();
+                System.out.println("CLEARED");
             }
 
             jsonArray.toList().stream().map(data -> (HashMap<String, Object>) data).forEachOrdered(result -> {
