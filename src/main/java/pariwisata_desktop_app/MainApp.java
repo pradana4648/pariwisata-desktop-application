@@ -14,6 +14,7 @@ import java.util.Vector;
 import java.util.stream.Collectors;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import pariwisata_desktop_app.pojo.Kabupaten;
 import pariwisata_desktop_app.pojo.Provinsi;
 import pariwisata_desktop_app.services.JSONService;
 
@@ -111,7 +112,6 @@ public class MainApp extends javax.swing.JFrame {
 
         jLabel8.setText("Kabupaten / Kota");
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 2" }));
         jComboBox3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox3ActionPerformed(evt);
@@ -196,19 +196,31 @@ public class MainApp extends javax.swing.JFrame {
 
     private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
         // TODO add your handling code here:        
-        
+
+        // If current list comboBox3 still exist
+        jComboBox3.removeAllItems();
         jComboBox2.addItemListener(new ItemListener() {
             @Override
-            public void itemStateChanged(ItemEvent arg0) {               
+            public void itemStateChanged(ItemEvent arg0) {
                 Provinsi singleProvinsi;
                 Set<Provinsi> setProvinsiFilter = JSONService.getListProvinsi().stream().collect(Collectors.toSet());
-                singleProvinsi = setProvinsiFilter.stream().filter(provinsi -> provinsi.getNamaProvinsi().equals(arg0.getItem().toString())).collect(Collectors.toList()).get(0);
+                singleProvinsi = setProvinsiFilter.stream().filter((Provinsi provinsi) -> provinsi.getNamaProvinsi().equals(arg0.getItem().toString())).collect(Collectors.toList()).get(0);
 
                 JSONService.getAllKabupaten(singleProvinsi.getId());
-                
+
                 System.out.println(JSONService.getListKabupaten());
             }
+
         });
+        for (Kabupaten kabupaten : JSONService.getListKabupaten()) {
+            jComboBox3.addItem(kabupaten.getNamaKabupaten());
+
+        }
+
+        jComboBox3.revalidate();
+        jComboBox3.repaint();
+
+
     }//GEN-LAST:event_jComboBox2ActionPerformed
 
     private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
