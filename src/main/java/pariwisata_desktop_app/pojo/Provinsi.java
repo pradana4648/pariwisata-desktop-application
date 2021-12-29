@@ -11,11 +11,11 @@ package pariwisata_desktop_app.pojo;
 public class Provinsi {
 
     private final String id;
-    private final String namaProvinsi;
+    private final String nama;
 
-    public Provinsi(String id, String namaProvinsi) {
+    public Provinsi(String id, String nama) {
         this.id = id;
-        this.namaProvinsi = namaProvinsi;
+        this.nama = nama;
     }
 
     /**
@@ -28,12 +28,12 @@ public class Provinsi {
     /**
      * @return the namaProvinsi
      */
-    public String getNamaProvinsi() {
-        return namaProvinsi;
+    public String getNama() {
+        return nama;
     }
 
     @Override
     public String toString() {
-        return "Provinsi{" + "id=" + id + ", namaProvinsi=" + namaProvinsi + '}';
+        return "Provinsi{" + "id=" + id + ", namaProvinsi=" + nama + '}';
     }
 }

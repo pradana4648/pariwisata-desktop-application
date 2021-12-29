@@ -10,12 +10,12 @@ package pariwisata_desktop_app.pojo;
  */
 public class Kabupaten {
 
-    private String id;
-    private String namaKabupaten;
+    private final String id;
+    private final String nama;
 
-    public Kabupaten(String id, String namaKabupaten) {
+    public Kabupaten(String id, String nama) {
         this.id = id;
-        this.namaKabupaten = namaKabupaten;
+        this.nama = nama;
     }
 
     /**
@@ -28,13 +28,13 @@ public class Kabupaten {
     /**
      * @return the namaKabupaten
      */
-    public String getNamaKabupaten() {
-        return namaKabupaten;
+    public String getNama() {
+        return nama;
     }
 
     @Override
     public String toString() {
-        return "Kabupaten{" + "id=" + id + ", namaKabupaten=" + namaKabupaten + '}';
+        return "Kabupaten{" + "id=" + id + ", namaKabupaten=" + nama + '}';
     }
 
 }

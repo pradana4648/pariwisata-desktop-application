@@ -6,15 +6,23 @@ package pariwisata_desktop_app;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.FormatFlagsConversionMismatchException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import pariwisata_desktop_app.pojo.Kabupaten;
 import pariwisata_desktop_app.pojo.Provinsi;
 import pariwisata_desktop_app.pojo.StoreResult;
+import pariwisata_desktop_app.services.FileService;
 import pariwisata_desktop_app.services.JSONService;
 import pariwisata_desktop_app.utils.WisataAlam;
 
@@ -29,15 +37,8 @@ public class MainApp extends javax.swing.JFrame {
      */
     public MainApp() {
         initComponents();
-
-        JSONService.getAllProvinsi();
-        // Sorted
-        JSONService.getListProvinsi().sort((Provinsi arg0, Provinsi arg1) -> arg0.getNamaProvinsi().compareTo(arg1.getNamaProvinsi()));
-        // Init Provinsi List
-        JSONService.getListProvinsi().forEach(provinsi -> {
-            provinsiComboBox.addItem(provinsi.getNamaProvinsi());
-        });
-
+        initComboBox();
+        initCheckField();
     }
 
     /**
@@ -67,9 +68,13 @@ public class MainApp extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         kabupatenComboBox = new javax.swing.JComboBox<>();
+        exportJsonButton = new javax.swing.JButton();
+        hapusButton = new javax.swing.JButton();
+        updateButton = new javax.swing.JButton();
+        filePathField = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         simpanButton = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pariwisata Desktop");
@@ -136,16 +141,32 @@ public class MainApp extends javax.swing.JFrame {
             }
         });
 
+        exportJsonButton.setText("Export ke JSON");
+        exportJsonButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportJsonButtonActionPerformed(evt);
+            }
+        });
+
+        hapusButton.setText("Hapus");
+
+        updateButton.setText("Update");
+
+        jLabel3.setText("Simpan File");
+
+        jButton1.setText("Pilih File");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         simpanButton.setText("Simpan");
         simpanButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 simpanButtonActionPerformed(evt);
             }
         });
-
-        jButton2.setText("Hapus");
-
-        jButton3.setText("Update");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -154,9 +175,10 @@ public class MainApp extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 788, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(hargaTiketLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -171,6 +193,7 @@ public class MainApp extends javax.swing.JFrame {
                             .addComponent(urlGambarField)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jenisPariwisataComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -182,20 +205,29 @@ public class MainApp extends javax.swing.JFrame {
                                         .addGap(18, 18, 18)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jButton3)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(jButton2))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                                 .addComponent(simpanButton)
-                                                .addGap(48, 48, 48))))
-                                    .addComponent(jenisPariwisataComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                                .addGap(18, 18, 18)
+                                                .addComponent(exportJsonButton))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(updateButton)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(hapusButton)))))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(filePathField)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton1)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(filePathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(namaField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -220,15 +252,17 @@ public class MainApp extends javax.swing.JFrame {
                     .addComponent(jLabel6)
                     .addComponent(provinsiComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
-                    .addComponent(simpanButton))
+                    .addComponent(updateButton)
+                    .addComponent(hapusButton))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(kabupatenComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(exportJsonButton)
+                    .addComponent(simpanButton))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -236,6 +270,9 @@ public class MainApp extends javax.swing.JFrame {
 
     private void provinsiComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_provinsiComboBoxActionPerformed
         // TODO add your handling code here:        
+        if (!kabupatenComboBox.isEnabled()) {
+            kabupatenComboBox.setEnabled(true);
+        }
 
         // If current list comboBox3 still exist
         kabupatenComboBox.removeAllItems();
@@ -243,16 +280,16 @@ public class MainApp extends javax.swing.JFrame {
         provinsiComboBox.addItemListener((ItemEvent arg0) -> {
             Provinsi singleProvinsi;
             Set<Provinsi> setProvinsiFilter = JSONService.getListProvinsi().stream().collect(Collectors.toSet());
-            singleProvinsi = setProvinsiFilter.stream().filter((Provinsi provinsi) -> provinsi.getNamaProvinsi().equals(arg0.getItem().toString())).collect(Collectors.toList()).get(0);
+            singleProvinsi = setProvinsiFilter.stream().filter((Provinsi provinsi) -> provinsi.getNama().equals(arg0.getItem().toString())).collect(Collectors.toList()).get(0);
 
             JSONService.getAllKabupaten(singleProvinsi.getId());
         });
 
         // Sorted 
-        JSONService.getListKabupaten().sort((Kabupaten arg0, Kabupaten arg1) -> arg0.getNamaKabupaten().compareTo(arg1.getNamaKabupaten()));
+        JSONService.getListKabupaten().sort((Kabupaten arg0, Kabupaten arg1) -> arg0.getNama().compareTo(arg1.getNama()));
 
         JSONService.getListKabupaten().forEach(kabupaten -> {
-            kabupatenComboBox.addItem(kabupaten.getNamaKabupaten());
+            kabupatenComboBox.addItem(kabupaten.getNama());
         });
 
         kabupatenComboBox.revalidate();
@@ -265,6 +302,25 @@ public class MainApp extends javax.swing.JFrame {
         // TODO add your handling code here:        
     }//GEN-LAST:event_kabupatenComboBoxActionPerformed
 
+    private void exportJsonButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportJsonButtonActionPerformed
+        // TODO add your handling code here:
+
+        FileService.savedDataToFileJSON(filePathField.getText());
+    }//GEN-LAST:event_exportJsonButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("JSON File", "json");
+        fileChooser.setFileFilter(fileFilter);
+
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            filePathField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+            initCheckField();
+            System.out.println("SAVED JSON FILE");
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     private void simpanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanButtonActionPerformed
         // TODO add your handling code here:
         final String[] columnNames = {"Nama", "Deskripsi", "Jenis Wisata", "Harga Tiket", "URL Gambar", "Lokasi"};
@@ -274,23 +330,20 @@ public class MainApp extends javax.swing.JFrame {
             boolean isValid = !namaField.getText().isBlank() && !deskripsiTextArea.getText().isBlank() && !hargaTiketField.getText().isBlank() && !urlGambarField.getText().isBlank();
             if (isValid) {
                 String lokasi = provinsiComboBox.getSelectedItem() + ", " + kabupatenComboBox.getSelectedItem();
-                StoreResult storedData = new StoreResult(namaField.getText(), deskripsiTextArea.getText(), (String) jenisPariwisataComboBox.getSelectedItem(), Integer.parseInt(hargaTiketField.getText()), urlGambarField.getText(), lokasi);
-//                dataTableModel.addRow(new Object[]{storedData.getNama(), storedData.getDeskripsi(), storedData.getJenisWisata(), storedData.getHargaTiket(), storedData.getUrlGambar(), storedData.getLokasi()});
-                StoreData.getTables().add(new Object[]{storedData.getNama(), storedData.getDeskripsi(), storedData.getJenisWisata(), storedData.getHargaTiket(), storedData.getUrlGambar(), storedData.getLokasi()});
-                
+                StoreResult storeResult = new StoreResult(namaField.getText(), deskripsiTextArea.getText(), (String) jenisPariwisataComboBox.getSelectedItem(), Integer.parseInt(hargaTiketField.getText()), urlGambarField.getText(), lokasi);
+                StoreData.getTables().add(new Object[]{storeResult.getNama(), storeResult.getDeskripsi(), storeResult.getJenisWisata(), storeResult.getHargaTiket(), storeResult.getUrlGambar(), storeResult.getLokasi()});
+
                 for (Object[] data : StoreData.getTables()) {
                     dataTableModel.addRow(data);
                 }
-                
+                FileService.saveDataToList(storeResult);
+
                 jTable1.setModel(dataTableModel);
             } else {
                 JOptionPane.showMessageDialog(null, "Seluruh field harus diisi");
             }
 
-            namaField.setText(null);
-            deskripsiTextArea.setText(null);
-            hargaTiketField.setText(null);
-            urlGambarField.setText(null);
+            clearField();
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "[" + hargaTiketLabel.getText().toUpperCase() + "]" + " TIDAK BOLEH DIISI HURUF", "PERINGATAN", JOptionPane.ERROR_MESSAGE);
@@ -300,8 +353,6 @@ public class MainApp extends javax.swing.JFrame {
         for (int i = 0; i < columnNames.length; i++) {
             jTable1.getColumnModel().getColumn(i).setMinWidth(100);
         }
-
-        System.out.println("");
 
 
     }//GEN-LAST:event_simpanButtonActionPerformed
@@ -341,12 +392,15 @@ public class MainApp extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea deskripsiTextArea;
+    private javax.swing.JButton exportJsonButton;
+    private javax.swing.JTextField filePathField;
+    private javax.swing.JButton hapusButton;
     private javax.swing.JTextField hargaTiketField;
     private javax.swing.JLabel hargaTiketLabel;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -360,6 +414,75 @@ public class MainApp extends javax.swing.JFrame {
     private javax.swing.JTextField namaField;
     private javax.swing.JComboBox<String> provinsiComboBox;
     private javax.swing.JButton simpanButton;
+    private javax.swing.JButton updateButton;
     private javax.swing.JTextField urlGambarField;
     // End of variables declaration//GEN-END:variables
+
+    // Call this to clear all field
+    private void clearField() {
+        namaField.setText(null);
+        deskripsiTextArea.setText(null);
+        hargaTiketField.setText(null);
+        urlGambarField.setText(null);
+    }
+
+    private void initComboBox() {
+        // Init Provinsi List and kabupatne
+        JSONService.getAllProvinsi();
+        // Sorted
+        JSONService.getListProvinsi().sort((Provinsi arg0, Provinsi arg1) -> arg0.getNama().compareTo(arg1.getNama()));
+        JSONService.getListProvinsi().forEach(provinsi -> {
+            provinsiComboBox.addItem(provinsi.getNama());
+        });
+
+        // Get All
+        provinsiComboBox.addItemListener((ItemEvent arg0) -> {
+            Provinsi singleProvinsi;
+            Set<Provinsi> setProvinsiFilter = JSONService.getListProvinsi().stream().collect(Collectors.toSet());
+            singleProvinsi = setProvinsiFilter.stream().filter((Provinsi provinsi) -> provinsi.getNama().equals(arg0.getItem().toString())).collect(Collectors.toList()).get(0);
+
+            JSONService.getAllKabupaten(singleProvinsi.getId());
+        });
+
+        // Sorted 
+        JSONService.getListKabupaten().sort((Kabupaten arg0, Kabupaten arg1) -> arg0.getNama().compareTo(arg1.getNama()));
+
+        JSONService.getListKabupaten().forEach(kabupaten -> {
+            kabupatenComboBox.addItem(kabupaten.getNama());
+        });
+
+        kabupatenComboBox.revalidate();
+        kabupatenComboBox.repaint();
+
+    }
+
+    private void initCheckField() {
+        // If pathfile is exist without white space
+        if (!filePathField.getText().isBlank()) {
+            namaField.setEnabled(true);
+            simpanButton.setEnabled(true);
+            deskripsiTextArea.setEnabled(true);
+            jenisPariwisataComboBox.setEnabled(true);
+            hargaTiketField.setEnabled(true);
+            urlGambarField.setEnabled(true);
+            provinsiComboBox.setEnabled(true);
+            updateButton.setEnabled(true);
+            hapusButton.setEnabled(true);
+            exportJsonButton.setEnabled(true);
+            jTable1.setEnabled(true);
+        } else {
+            namaField.setEnabled(false);
+            simpanButton.setEnabled(false);
+            deskripsiTextArea.setEnabled(false);
+            jenisPariwisataComboBox.setEnabled(false);
+            hargaTiketField.setEnabled(false);
+            urlGambarField.setEnabled(false);
+            provinsiComboBox.setEnabled(false);
+            kabupatenComboBox.setEnabled(false);
+            updateButton.setEnabled(false);
+            hapusButton.setEnabled(false);
+            exportJsonButton.setEnabled(false);
+            jTable1.setEnabled(false);
+        }
+    }
 }

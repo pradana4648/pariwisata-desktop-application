@@ -4,18 +4,18 @@
  */
 package pariwisata_desktop_app.services;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONArray;
-import org.json.JSONTokener;
 import pariwisata_desktop_app.pojo.Kabupaten;
 import pariwisata_desktop_app.pojo.Provinsi;
 
@@ -25,6 +25,7 @@ import pariwisata_desktop_app.pojo.Provinsi;
  */
 public class JSONService {
 
+    private static final Gson gson = new Gson();
     private static final File file = new File(System.getProperty("user.dir"));
     private static final List<Kabupaten> listKabupaten = new ArrayList<Kabupaten>();
     private static final List<Provinsi> listProvinsi = new ArrayList<Provinsi>();
@@ -39,6 +40,7 @@ public class JSONService {
     }
 
     public static void getAllProvinsi() {
+
         File provinsiFile = new File(file.getAbsolutePath() + "\\src\\main\\java\\pariwisata_desktop_app\\provinsi\\Provinsi.json");
 
         InputStream inputStream;
@@ -54,20 +56,20 @@ public class JSONService {
 
         if (arrBytes != null) {
             String jsonResult = new String(arrBytes);
-            System.out.println(jsonResult);
-            JSONTokener jsonToken = new JSONTokener(jsonResult);
-            JSONArray jsonArray = new JSONArray(jsonToken);
+            // Infer type of List<Provinsi>
+            Type provinsiType = new TypeToken<ArrayList<Provinsi>>() {
+            }.getType();
+            List<Provinsi> listJsonProvinsi = gson.fromJson(jsonResult, provinsiType);
 
-            jsonArray.toList().stream().map(data -> (HashMap<String, Object>) data).forEachOrdered(result -> {
-                getListProvinsi().add(new Provinsi((String) result.get("id"), (String) result.get("nama")));
+            listJsonProvinsi.stream().forEachOrdered(result -> {
+                getListProvinsi().add(new Provinsi(result.getId(), result.getNama()));
             });
-
         }
 
     }
 
-    public static void getAllKabupaten(String name) {
-        File provinsiFile = new File(file.getAbsolutePath() + "\\src\\main\\java\\pariwisata_desktop_app\\kabupaten\\" + name + ".json");
+    public static void getAllKabupaten(String fileIdName) {
+        File provinsiFile = new File(file.getAbsolutePath() + "\\src\\main\\java\\pariwisata_desktop_app\\kabupaten\\" + fileIdName + ".json");
 
         InputStream inputStream;
         byte[] arrBytes = null;
@@ -82,18 +84,20 @@ public class JSONService {
 
         if (arrBytes != null) {
             String jsonResult = new String(arrBytes);
-            System.out.println(jsonResult);
-            JSONTokener jsonToken = new JSONTokener(jsonResult);
-            JSONArray jsonArray = new JSONArray(jsonToken);
+
+            // Infer type of List<Kabupaten>
+            Type kabupatenType = new TypeToken<ArrayList<Kabupaten>>() {
+            }.getType();
+            List<Kabupaten> listJsonKabupaten = gson.fromJson(jsonResult, kabupatenType);
 
             // If List Kabupaten is existed
             if (!getListKabupaten().isEmpty()) {
                 getListKabupaten().clear();
-                System.out.println("CLEARED");
+                
             }
 
-            jsonArray.toList().stream().map(data -> (HashMap<String, Object>) data).forEachOrdered(result -> {
-                getListKabupaten().add(new Kabupaten((String) result.get("id"), (String) result.get("nama")));
+            listJsonKabupaten.stream().forEachOrdered((Kabupaten result) -> {
+                getListKabupaten().add(new Kabupaten(result.getId(), result.getNama()));
             });
         }
     }

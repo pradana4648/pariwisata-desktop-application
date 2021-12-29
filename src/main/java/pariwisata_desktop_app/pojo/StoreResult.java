@@ -4,12 +4,19 @@
  */
 package pariwisata_desktop_app.pojo;
 
+import com.fasterxml.uuid.Generators;
+
 /**
  *
  * @author danar
  */
 public class StoreResult {
 
+    public String getId() {
+        return id;
+    }
+
+    private final String id;
     private final String nama;
     private final String deskripsi;
     private final String jenisWisata;
@@ -18,6 +25,7 @@ public class StoreResult {
     private final String lokasi;
 
     public StoreResult(String nama, String deskripsi, String jenisWisata, int hargaTiket, String urlGambar, String lokasi) {
+        this.id = Generators.randomBasedGenerator().generate().toString();
         this.nama = nama;
         this.deskripsi = deskripsi;
         this.jenisWisata = jenisWisata;

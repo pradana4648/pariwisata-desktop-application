@@ -1,17 +1,21 @@
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import org.junit.*;
-import org.json.*;
+
 import pariwisata_desktop_app.pojo.Kabupaten;
+import pariwisata_desktop_app.pojo.Provinsi;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -24,13 +28,8 @@ import pariwisata_desktop_app.pojo.Kabupaten;
 public class DataIndonesiaTest {
 
     private final File file = new File(System.getProperty("user.dir"));
-    // JSON TEMPLATE
-    // {"id":"1101","nama":"KAB. ACEH SELATAN"}
-    // {"id":"1102","nama": "KAB. ACEH TENGGARA"}
-    private final Kabupaten[] kabupatenArr = new Kabupaten[]{new Kabupaten("1101", "KAB. ACEH SELATAN"), new Kabupaten("1102", "KAB. ACEH TENGGARA")};
-    private final List<Kabupaten> kabupaten = Arrays.asList(kabupatenArr);
 
-    private final List<Kabupaten> listKabupatens = new ArrayList<>();
+    private final String exactName = "KAB. ACEH SELATAN";
 
     @Test
     public void testCurrentDirectory() {
@@ -56,21 +55,17 @@ public class DataIndonesiaTest {
         InputStream inputStream = new FileInputStream(singleFile);
         byte[] arrBytes = inputStream.readAllBytes();
         String jsonResult = new String(arrBytes);
+
 //        System.out.println(jsonResult);
-        JSONTokener jsonToken = new JSONTokener(jsonResult);
-        JSONArray jsonArray = new JSONArray(jsonToken);
-//        System.out.println(jsonArray.getJSONObject(0).get("nama"));
+        Gson gson = new Gson();
+        Type kabupatenType = new TypeToken<ArrayList<Kabupaten>>() {
+        }.getType();
+        List<Kabupaten> kabupaten = gson.fromJson(jsonResult, kabupatenType);
 
-        // Test single Object in JSONArray
-        Assert.assertEquals("KAB. ACEH SELATAN", jsonArray.getJSONObject(0).get("nama"));
+        Assert.assertNotNull(kabupaten);
 
-        // Test JSONArray match ArrayList<Kabupaten>
-        jsonArray.toList().stream().map(data -> (HashMap<String, Object>) data).forEachOrdered(new Consumer<HashMap<String, Object>>() {
-            @Override
-            public void accept(HashMap<String, Object> result) {
-                listKabupatens.add(new Kabupaten((String) result.get("id"), (String) result.get("nama")));
-            }
-        });
+        // GET SINGLE KABUPATEN NAME
+        Assert.assertEquals(exactName, kabupaten.get(0).getNama());
 
     }
 }
