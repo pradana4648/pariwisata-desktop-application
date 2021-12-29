@@ -38,6 +38,9 @@ public class MainApp extends javax.swing.JFrame {
         initComponents();
         initComboBox();
         initCheckField();
+        // Disable button
+        updateButton.setVisible(false);
+        hapusButton.setVisible(false);
         
         // Override to accept only numbers
         hargaTiketField.addKeyListener(new KeyAdapter() {
