@@ -10,19 +10,25 @@ package pariwisata_desktop_app.utils;
  */
 public class WisataAlam {
 
-    enum JenisWisata {
+    public enum JenisWisata {
         WISATA_ALAMI,
         WISATA_BUATAN
     }
 
-    public static JenisWisata wisataAlamMapper(String jenisWisataString) {
-        switch (jenisWisataString) {
-            case "Wisata Alami":
-                return JenisWisata.WISATA_ALAMI;
-            case "Wisata Buatan":
-                return JenisWisata.WISATA_BUATAN;
+    public static String wisataAlamMapper(JenisWisata jenisWisata) {
+        String result = "";
+        switch (jenisWisata) {
+            case WISATA_ALAMI:
+                result = "Wisata Alami";
+                break;
+            case WISATA_BUATAN:
+                result = "Wisata Buatan";
+                break;
             default:
-                return null;
-        }        
+
+        }
+        return result;
+
     }
+
 }

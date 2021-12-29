@@ -29,7 +29,7 @@ public class JSONService {
     private static final List<Kabupaten> listKabupaten = new ArrayList<Kabupaten>();
     private static final List<Provinsi> listProvinsi = new ArrayList<Provinsi>();
 
-    private static JSONService instance = new JSONService();
+    private static final JSONService instance = new JSONService();
 
     private JSONService() {
     }
