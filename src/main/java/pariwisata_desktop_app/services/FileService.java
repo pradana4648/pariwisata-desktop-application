@@ -40,10 +40,8 @@ public class FileService {
         String jsonBody = gson.toJson(listStoreResult);
         System.out.println("JSON RESULT : " + jsonBody);
         try {
-            FileWriter fileWriter = new FileWriter(savedFileLocationPath, true);
+            FileWriter fileWriter = new FileWriter(savedFileLocationPath);
             PrintWriter printWriter = new PrintWriter(fileWriter);
-//            BufferedWriter bufferedWriter = new BufferedWriter(printWriter);
-
             printWriter.append(jsonBody);
 
             // Don't forget to flush to saving data

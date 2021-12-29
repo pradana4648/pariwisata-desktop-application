@@ -5,26 +5,25 @@
 package pariwisata_desktop_app;
 
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.FormatFlagsConversionMismatchException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import pariwisata_desktop_app.pojo.Kabupaten;
 import pariwisata_desktop_app.pojo.Provinsi;
 import pariwisata_desktop_app.pojo.StoreResult;
 import pariwisata_desktop_app.services.FileService;
 import pariwisata_desktop_app.services.JSONService;
-import pariwisata_desktop_app.utils.WisataAlam;
 
 /**
  *
@@ -39,6 +38,16 @@ public class MainApp extends javax.swing.JFrame {
         initComponents();
         initComboBox();
         initCheckField();
+        
+        // Override to accept only numbers
+        hargaTiketField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                    e.consume();  // if it's not a number, ignore the event
+                }
+            }
+        });
     }
 
     /**
@@ -112,8 +121,15 @@ public class MainApp extends javax.swing.JFrame {
         jTable1.setAlignmentY(1.0F);
         jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTable1.setRowSelectionAllowed(false);
         jTable1.setShowGrid(true);
         jScrollPane2.setViewportView(jTable1);
+
+        hargaTiketField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hargaTiketFieldActionPerformed(evt);
+            }
+        });
 
         hargaTiketLabel.setText("Harga Tiket ");
 
@@ -357,6 +373,22 @@ public class MainApp extends javax.swing.JFrame {
 
     }//GEN-LAST:event_simpanButtonActionPerformed
 
+    private void hargaTiketFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hargaTiketFieldActionPerformed
+        // TODO add your handling code here:
+        ((AbstractDocument) hargaTiketField.getDocument()).setDocumentFilter(new DocumentFilter() {
+            Pattern regEx = Pattern.compile("\\d*");
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                Matcher matcher = regEx.matcher(text);
+                if (!matcher.matches()) {
+                    return;
+                }
+                super.replace(fb, offset, length, text, attrs);
+            }
+        });
+    }//GEN-LAST:event_hargaTiketFieldActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -374,13 +406,17 @@ public class MainApp extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainApp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainApp.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainApp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainApp.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainApp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainApp.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainApp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainApp.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
